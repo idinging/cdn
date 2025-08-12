@@ -31,19 +31,20 @@
 
       <!-- JS 库列表 -->
       <section class="libs-section">
-        <h2>常用 JS 库</h2>
+        <h2>常用 JS 库 <input type="text" v-model="searchText" placeholder="输入关键字搜索..." /></h2>
         <div class="table-container">
           <table class="libs-table">
             <thead><tr><th>库名</th><th>版本</th><th>CDN 地址</th><th>操作</th></tr></thead>
             <tbody>
-              <tr v-for="(lib, index) in appData.libs" :key="index">
+              <tr v-for="(lib, index) in filterLibs" :key="index">
                 <td>{{ lib.zname || lib.name }}</td>
                 <td>{{ lib.version }}</td>
                 <td class="cdn-url"><code>{{ lib.cdnUrl}}</code></td>
                 <td class="actions">
-                  <button class="btn btn-copy" @click="copyUrl(lib.cdnUrl)">复制 </button>
-                  <button class="btn btn-open" @click="openUrl(lib)">打开 </button>
-                  <button class="btn btn-open" @click="openUrl(lib, 'dist/')">打开dist </button>
+                  <button class="btn btn-copy" @click="copyUrl(lib.cdnUrl)">复制</button>
+                  <button class="btn btn-copy" @click="copyUrl(lib.cdnUrl, true)">标签</button>
+                  <button class="btn btn-open" @click="openUrl(lib)">打开</button>
+                  <button class="btn btn-open" @click="openUrl(lib, 'dist/')">打开dist</button>
                 </td>
               </tr>
             </tbody>
@@ -76,6 +77,16 @@
     <!-- 提示消息 -->
     <div class="toast" :class="{ show: showToast }" @click="showToast = false">
       {{ toastMessage }}
+    </div>
+
+    <div class="dialog" v-show="dialogShow" @click.self="dialogShow = false">
+      <div class="dialog-cont">
+        <h3>{{ iframeSrc }}
+          <button class="btn btn-copy-template" @click="copyUrl(iframeSrc)">复制</button>
+          <button class="btn btn-copy-template" @click="copyUrl(iframeSrc, true)">复制标签</button>
+        </h3>
+        <iframe v-if="dialogShow" :src="iframeSrc" class="dialog-iframe" frameborder="0"></iframe>
+      </div>
     </div>
   </div>
 

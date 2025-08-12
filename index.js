@@ -1,7 +1,9 @@
 window.vueApp = Vue.createApp({
   data() {
     return {
+      dialogShow: false,
       isDarkMode: false,
+      searchText: '',
       selectedCdn: 0,
       selectedTemplate: '',
       htmlTemplate: '',
@@ -17,6 +19,11 @@ window.vueApp = Vue.createApp({
     this.updateCdnUrls()
     this.initTheme()
     this.testAllCdnLatency()
+  },
+  computed: {
+    filterLibs() {
+      return this.appData.libs.filter(lib => lib.name.toLowerCase().includes(this.searchText.toLowerCase()))
+    }
   },
   methods: {
     initTheme() {
@@ -65,7 +72,14 @@ window.vueApp = Vue.createApp({
         this.testCdnLatency(index)
       })
     },
-    async copyUrl(text) {
+    async copyUrl(text, isTag) {
+      if (isTag) {
+        if (text.endsWith('.css')) {
+          text = '<link rel="stylesheet" href="' + text + '">'
+        } else {
+          text = '<script src="' + text + '"></script>'
+        }
+      }
       try {
         await navigator.clipboard.writeText(text)
       } catch (err) {
@@ -76,10 +90,12 @@ window.vueApp = Vue.createApp({
         document.execCommand('copy')
         document.body.removeChild(textArea)
       }
-      this.showToastMessage('已复制到剪贴板')
+      this.showToastMessage(`已复制${isTag ? '标签+链接' : '链接'}到剪贴板`)
     },
     openUrl(lib, dist) {
-      window.open(this.getCdnUrl(lib.name, lib.version, lib.file, null, dist), '_blank')
+      this.iframeSrc = this.getCdnUrl(lib.name, lib.version, lib.file, null, dist)
+      this.dialogShow = true
+      // window.open(this.getCdnUrl(lib.name, lib.version, lib.file, null, dist), '_blank')
     },
     showToastMessage(message) {
       this.toastMessage = message
