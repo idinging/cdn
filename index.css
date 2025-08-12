@@ -41,11 +41,12 @@ body {
     display: none;
 }
 input:not([type="radio"]), select { -webkit-appearance: none; background-color: #fff; border-radius: 4px; border: 1px solid #dcdfe6;  color: #333;  display: inline-block; 
-  height: var(--input-height); line-height: var(--input-height); padding: 0 10px;  width: 280px; position: relative; }
+  height: var(--input-height); line-height: var(--input-height); padding: 0 10px;  width: 200px; position: relative; }
 .dialog { position: fixed; width: 100vw; height: 100vh; left: 0; top: 0; z-index: 9999; background: rgba(0, 0, 0, 0.5); text-align: center; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-.dialog-cont { min-width: 40vw; max-width: min(1300px, 90vw); min-height: 40vh; max-height: 84vh; overflow: auto;  background: #fff; border-radius: 12px; padding: 10px; }
+.dialog-cont { min-width: 40vw; max-width: min(1300px, 90vw); min-height: 40vh; max-height: 88vh; overflow: auto;  background: #fff; border-radius: 12px; padding: 10px; }
 .dialog-iframe { border: none; width: 50vw; height: 70vh; }
-.dialog h3 { text-align: center; }
+.dialog h3 {text-align: center;word-break: break-all;}
+button+button { margin-left: 6px; }
 
 .container {
     max-width: 1400px;
@@ -167,7 +168,6 @@ h2 {
 
 .actions {
     display: flex;
-    gap: 8px;
 }
 
 .btn {
@@ -208,13 +208,6 @@ h2 {
 }
 
 .template-select {
-    /* padding: 8px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
-    font-size: 14px;
-    cursor: pointer; */
     min-width: 200px;
 }
 
@@ -260,10 +253,13 @@ h2 {
 @media (max-width: 768px) {
     .container {
         padding: 10px;
+        width: 100%;
     }
     
     .header {
-        padding: 15px;
+        padding: 10px;
+        line-height: 1.2;
+        margin-bottom: 0;
     }
     
     .header h1 {
@@ -275,16 +271,25 @@ h2 {
     }
     
     .cdn-options {
-        flex-direction: column;
+        gap: 6px;
+    }
+    .cdn-option {
+        padding: 4px 6px;
     }
     
-    .template-controls {
-        flex-direction: column;
-        align-items: flex-start;
+    .dialog-iframe {
+        width: 86vw;
     }
-    
-    .btn-copy-template {
-        margin-left: 0;
-        margin-top: 10px;
+    h3 {
+        font-size: 16px;
+    }
+}
+@media (max-width: 450px) {
+    thead {
+        display: none;
+    }
+    tr {
+        display: flex;
+        flex-wrap: wrap;
     }
 }
