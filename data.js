@@ -1,0 +1,36 @@
+window.cdnData = {
+  cdn: [
+    { name: 'cdnjs', url: 'https://cdnjs.cloudflare.com/ajax/libs/#name/#version/#file' },
+    { name: '南科大镜像', url: 'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/#name/#version/#file' },
+    { name: 'jsDelivr', url: 'https://cdn.jsdelivr.net/npm/#name@#version/#file' },
+    { name: 'zstatic', url: 'https://s4.zstatic.net/ajax/libs/#name/#version/#file' },
+    { name: 'Unpkg', url: 'https://unpkg.com/#name@#version/#file' },
+    { name: 'npmmirror-dist', url: 'https://registry.npmmirror.com/#name/#version/files/dist/#file' },
+    { name: 'npmmirror', url: 'https://registry.npmmirror.com/#name/#version/files/#file' },
+    { name: 'staticfile', url: 'https://cdn.staticfile.net/#name/#version/#file' },
+    { name: 'BootCDN', url: 'https://cdn.bootcdn.net/ajax/libs/#name/#version/#file' },
+  ],
+  libs: [
+    { name: 'vue', version: '3.5.17', file: 'vue.global.prod.js', zname: 'vue3' },
+    { name: 'vue', version: '2.7.16', file: 'vue.min.js', zname: 'vue2' },
+    { name: 'blueimp-md5', version: '2.19.0', file: 'md5.min.js' },
+    { name: 'axios', version: '1.11.0', file: 'axios.min.js' },
+    { name: 'lodash', version: '4.17.21', file: 'lodash.min.js' },
+    { name: 'dayjs', version: '1.11.13', file: 'dayjs.min.js' },
+    { name: 'moment', version: '2.30.1', file: 'moment.min.js' },
+    { name: 'jquery', version: '3.7.1', file: 'jquery.min.js' },
+    { name: 'prism', version: '1.30.0', file: 'prism.min.js' },
+    { name: 'prism', version: '1.30.0', file: 'themes/prism.min.css', zname: 'prism-css' },
+    { name: 'marked', version: '16.1.2', file: 'lib/marked.umd.min.js' },
+    { name: 'pako', version: '2.1.0', file: 'pako.min.js' },
+    { name: 'localforage', version: '1.10.0', file: 'localforage.min.js' },
+    { name: 'bootstrap', version: '5.3.2', file: 'js/bootstrap.bundle.min.js' },
+    { name: 'element-ui', version: '2.15.14', file: 'index.min.js' },
+    { name: 'element-ui', version: '2.15.14', file: 'theme-chalk/index.min.css', zname: 'element-ui-css' },
+    { name: 'element-plus', version: '2.10.6', file: 'index.full.min.js' },
+    { name: 'element-plus', version: '2.10.6', file: 'index.min.css', zname: 'element-plus-css' },
+    { name: 'element-plus-icons-vue', version: '2.3.2', file: 'index.iife.min.js' },
+    { name: 'echarts', version: '5.4.3', file: 'echarts.min.js' },
+    { name: 'd3', version: '7.8.5', file: 'd3.min.js' }
+  ]
+}

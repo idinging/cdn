@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CDN 工具箱</title>
+  <link rel="stylesheet" href="index.css">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+</head>
+
+<body>
+  <div id="app" v-cloak>
+    <header class="header">
+      <h1>CDN 工具箱</h1>
+      <div class="theme-toggle" @click="toggleTheme">{{ isDarkMode ? '🌙' : '☀️' }}</div>
+    </header>
+
+    <main class="container">
+      <section class="cdn-section">
+        <h2>选择 CDN 源</h2>
+        <div class="cdn-options">
+          <label v-for="(cdn, index) in appData.cdn" :key="index" class="cdn-option">
+            <input type="radio" name="cdn" :value="index" v-model="selectedCdn" @change="updateCdnUrls">
+            <span class="cdn-name">{{ cdn.name }}</span>
+            <span class="cdn-latency" v-if="cdn.latency !== null">({{ cdn.latency }})</span>
+            <span class="cdn-latency loading" v-else-if="cdn.loading">(测试中...)</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- JS 库列表 -->
+      <section class="libs-section">
+        <h2>常用 JS 库</h2>
+        <div class="table-container">
+          <table class="libs-table">
+            <thead><tr><th>库名</th><th>版本</th><th>CDN 地址</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr v-for="(lib, index) in appData.libs" :key="index">
+                <td>{{ lib.zname || lib.name }}</td>
+                <td>{{ lib.version }}</td>
+                <td class="cdn-url"><code>{{ lib.cdnUrl}}</code></td>
+                <td class="actions">
+                  <button class="btn btn-copy" @click="copyUrl(lib.cdnUrl)">复制 </button>
+                  <button class="btn btn-open" @click="openUrl(lib)">打开 </button>
+                  <button class="btn btn-open" @click="openUrl(lib, 'dist/')">打开dist </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- HTML 模板配置 -->
+      <section class="template-section">
+        <h2>HTML 模板配置</h2>
+        <div class="template-controls">
+          <select v-model="selectedTemplate" @change="generateTemplate" class="template-select">
+            <option value="">选择模板</option>
+            <option value="vue2">Vue 2 模板</option>
+            <option value="vue3">Vue 3 模板</option>
+            <option value="layui">Layui 模板</option>
+            <option value="basic">基础JQuery模板</option>
+            <option value="loading">加载</option>
+          </select>
+          <button class="btn btn-copy-template" @click="copyUrl(htmlTemplate)" :disabled="!htmlTemplate">
+            复制模板
+          </button>
+        </div>
+        <div v-if="htmlTemplate" class="template-preview">
+          <pre class="language-html"><code class="language-html">{{ htmlTemplate }}</code></pre>
+        </div>
+      </section>
+    </main>
+
+    <!-- 提示消息 -->
+    <div class="toast" :class="{ show: showToast }" @click="showToast = false">
+      {{ toastMessage }}
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.17/vue.global.prod.js"></script>
+  <script src="data.js"></script>
+  <script src="index.js"></script>
+</body>
+
+</html>
