@@ -67,6 +67,9 @@
           <button class="btn btn-copy-template" @click="copyUrl(htmlTemplate)" :disabled="!htmlTemplate">
             复制模板
           </button>
+          <button class="btn" @click="previewUrl(htmlTemplate)" :disabled="!htmlTemplate">
+            预览
+          </button>
         </div>
         <div v-if="htmlTemplate" class="template-preview">
           <pre class="language-html"><code class="language-html">{{ htmlTemplate }}</code></pre>
