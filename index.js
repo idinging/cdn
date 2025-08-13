@@ -319,8 +319,9 @@ window.vueApp = Vue.createApp({
       this.$nextTick(() => Prism.highlightAll())
     },
     previewUrl(html) {
-      var dataUri = "data:text/html;charset=utf-8," + encodeURIComponent(html);
-      window.open(dataUri); // , "_blank", `width=${innerWidth * 0.8},height=${innerHeight * 0.8},resizable=yes,scrollbars=yes,status=yes`
+      // const dataUri = "data:text/html;charset=utf-8," + encodeURIComponent(html);
+      const dataUri = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+      window.open(dataUri, "_blank", `width=${innerWidth * 0.8},height=${innerHeight * 0.8},resizable=yes,scrollbars=yes,status=yes`); // 
     },
   }
 }).mount('#app')
