@@ -2,6 +2,7 @@ window.vueApp = Vue.createApp({
   data() {
     return {
       dialogShow: false,
+      isNewWin: localStorage.getItem('cdn-isNewWin') === 'true',
       isDarkMode: false,
       searchText: '',
       selectedCdn: 0,
@@ -12,13 +13,18 @@ window.vueApp = Vue.createApp({
       appData: {
         cdn: cdnData.cdn.map(x => ({...x, latency: null, loading: false})), 
         libs: cdnData.libs,
-      }
+      },
+      sizeMap: JSON.parse(localStorage.getItem('cdn-sizeMap') || '{}'),
+      timer: null
     }
   },
   mounted() {
     this.updateCdnUrls()
     this.initTheme()
     this.testAllCdnLatency()
+  },
+  watch: {
+    isNewWin(val) { localStorage.setItem('cdn-isNewWin', val) }
   },
   computed: {
     filterLibs() {
@@ -93,14 +99,46 @@ window.vueApp = Vue.createApp({
       this.showToastMessage(`已复制${isTag ? '标签+链接' : '链接'}到剪贴板`)
     },
     openUrl(lib, dist) {
+      if (this.isNewWin) return window.open(this.getCdnUrl(lib.name, lib.version, lib.file, null, dist))
       this.iframeSrc = this.getCdnUrl(lib.name, lib.version, lib.file, null, dist)
       this.dialogShow = true
       // window.open(this.getCdnUrl(lib.name, lib.version, lib.file, null, dist), '_blank')
     },
-    showToastMessage(message) {
+    openNewUrl(url) {
+      window.open(url).focus()
+    },
+    async getFileSize(lib, url) {
+      const name = (lib.zname || lib.name) + '-' + lib.version
+      if (this.sizeMap[name]) return this.showToastMessage(this.sizeMap[name], 3000)
+      let size = await this.fileSize(url)
+      if (!size) return this.showToastMessage('获取文件大小失败')
+      this.showToastMessage(size, 3000)
+      this.sizeMap[name] = size
+      localStorage.setItem('cdn-sizeMap', JSON.stringify(this.sizeMap))
+    },
+    async fileSize(url) {
+      let size = ''
+      try {
+        let res = await fetch(url, { method: 'HEAD' });
+        if (res.ok) {
+          const len = res.headers.get('Content-Length');
+          if (len) size += (parseInt(len, 10) / 1024).toFixed(2) + ' KB(gzip)，';
+        }
+        res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
+        const blob = await res.blob();
+        size += (blob.size / 1024).toFixed(2) + ' KB';
+      } catch (e) {
+        console.error('获取文件大小失败:', e);
+        return size || null;
+      }
+      return size;
+    },
+    showToastMessage(message, time = 2000) {
+      clearTimeout(this.timer)
       this.toastMessage = message
       this.showToast = true
-      setTimeout(() => this.showToast = false, 2000)
+      this.timer = setTimeout(() => this.showToast = false, time)
     },
     generateTemplate() {
       const templates = {

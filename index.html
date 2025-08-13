@@ -13,7 +13,10 @@
   <div id="app" v-cloak>
     <header class="header">
       <h1>CDN 工具箱</h1>
-      <div class="theme-toggle" @click="toggleTheme">{{ isDarkMode ? '🌙' : '☀️' }}</div>
+      <div class="theme-toggle">
+        <span @click="isNewWin = !isNewWin" :class="{ opacity: !isNewWin }" title="是否新窗口打开">🎛️</span> 
+        <span @click="toggleTheme"> {{ isDarkMode ? '🌙' : '☀️' }}</span>
+      </div>
     </header>
 
     <main class="container">
@@ -45,6 +48,7 @@
                   <button class="btn btn-copy" @click="copyUrl(lib.cdnUrl, true)">标签</button>
                   <button class="btn btn-open" @click="openUrl(lib)">打开</button>
                   <button class="btn btn-open" @click="openUrl(lib, 'dist/')">打开dist</button>
+                  <button class="btn btn-open" @click="getFileSize(lib, lib.cdnUrl)">大小</button>
                 </td>
               </tr>
             </tbody>
@@ -87,15 +91,16 @@
         <h3>{{ iframeSrc }}
           <button class="btn btn-copy-template" @click="copyUrl(iframeSrc)">复制</button>
           <button class="btn btn-copy-template" @click="copyUrl(iframeSrc, true)">复制标签</button>
+          <button class="btn" @click="openNewUrl(iframeSrc)">新打开</button>
         </h3>
         <iframe v-if="dialogShow" :src="iframeSrc" class="dialog-iframe" frameborder="0"></iframe>
       </div>
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.17/vue.global.prod.js"></script>
+  <script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/prism/1.30.0/prism.min.js"></script>
+  <link href="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/prism/1.30.0/themes/prism.min.css" rel="stylesheet">
+  <script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/vue/3.5.17/vue.global.prod.js"></script>
   <script src="data.js"></script>
   <script src="index.js"></script>
 </body>

@@ -44,9 +44,12 @@ input:not([type="radio"]), select { -webkit-appearance: none; background-color: 
   height: var(--input-height); line-height: var(--input-height); padding: 0 10px;  width: 200px; position: relative; }
 .dialog { position: fixed; width: 100vw; height: 100vh; left: 0; top: 0; z-index: 9999; background: rgba(0, 0, 0, 0.5); text-align: center; display: flex; align-items: center; justify-content: center; flex-direction: column; }
 .dialog-cont { min-width: 40vw; max-width: min(1300px, 90vw); min-height: 40vh; max-height: 88vh; overflow: auto;  background: #fff; border-radius: 12px; padding: 10px; }
-.dialog-iframe { border: none; width: 50vw; height: 70vh; }
+.dialog-iframe { border: none; width: 60vw; height: 70vh; }
 .dialog h3 {text-align: center;word-break: break-all;}
 button+button { margin-left: 6px; }
+.opacity {
+    opacity: 0.5;
+}
 
 .container {
     max-width: 1400px;
