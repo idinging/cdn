@@ -320,7 +320,7 @@ window.vueApp = Vue.createApp({
     },
     previewUrl(html) {
       var dataUri = "data:text/html;charset=utf-8," + encodeURIComponent(html);
-      window.open(dataUri, "_blank", `width=${innerWidth * 0.8},height=${innerHeight * 0.8},resizable=yes,scrollbars=yes,status=yes`);
+      window.open(dataUri); // , "_blank", `width=${innerWidth * 0.8},height=${innerHeight * 0.8},resizable=yes,scrollbars=yes,status=yes`
     },
   }
 }).mount('#app')
