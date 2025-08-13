@@ -4,6 +4,7 @@ window.cdnData = {
     { name: '南科大镜像', url: 'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/#name/#version/#file' },
     { name: 'jsDelivr', url: 'https://cdn.jsdelivr.net/npm/#name@#version/#file' },
     { name: 'zstatic', url: 'https://s4.zstatic.net/ajax/libs/#name/#version/#file' },
+    { name: 'staticfile', url: 'https://cdn.staticfile.net/#name/#version/#file' },
     { name: 'Unpkg', url: 'https://unpkg.com/#name@#version/#file' },
     { name: 'npmmirror-dist', url: 'https://registry.npmmirror.com/#name/#version/files/dist/#file' },
     { name: 'npmmirror', url: 'https://registry.npmmirror.com/#name/#version/files/#file' },
