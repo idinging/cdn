@@ -321,7 +321,7 @@ window.vueApp = Vue.createApp({
     previewUrl(html) {
       // const dataUri = "data:text/html;charset=utf-8," + encodeURIComponent(html);
       const dataUri = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
-      window.open(dataUri, "_blank", `width=${screen.width * 0.8},height=${screen.height * 0.8},left=${screen.width * 0.1},top=${screen.height * 0.1},resizable=yes,scrollbars=yes,status=yes`); // 
+      window.open(dataUri); // , "_blank", `width=${screen.width * 0.8},height=${screen.height * 0.8},left=${screen.width * 0.1},top=${screen.height * 0.1},resizable=yes,scrollbars=yes,status=yes`
     },
   }
 }).mount('#app')
