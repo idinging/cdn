@@ -1,0 +1,6 @@
+name = "cdn"
+main = "src/index.js"
+compatibility_date = "2025-08-21"
+
+[site]
+bucket = "./"        # 指定你静态文件的位置（这里就是仓库根目录）
