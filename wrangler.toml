@@ -3,6 +3,6 @@ main = "./wrp.js"
 compatibility_date = "2025-08-21"
 
 [assets]
-directory = "public"
+directory = "./"
 binding = "ASSETS"
 
