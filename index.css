@@ -73,6 +73,8 @@ button+button { margin-left: 6px; }
     font-weight: 600;
 }
 
+.header h1 a { font-size: 16px; margin-left: 14px; color: #00bd7e; text-decoration: underline; }
+
 .theme-toggle {
     cursor: pointer;
     font-size: 20px;

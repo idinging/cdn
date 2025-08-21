@@ -12,7 +12,7 @@
 <body>
   <div id="app" v-cloak>
     <header class="header">
-      <h1>CDN 工具箱</h1>
+      <h1>CDN 工具箱 <a href="./lib.html">访问Mirrors镜像库</a></h1>
       <div class="theme-toggle">
         <span @click="isNewWin = !isNewWin" :class="{ opacity: !isNewWin }" title="是否新窗口打开">🎛️</span> 
         <span @click="toggleTheme"> {{ isDarkMode ? '🌙' : '☀️' }}</span>
@@ -97,6 +97,7 @@
       </div>
     </div>
   </div>
+  <div style="text-align: center;font-size: 13px;padding: 10px 0;"><a href="https://github.com/dhjz/cdn" target="_blank" style="color: #00bd7e;">@dhjz/cdn</a></div>
 
   <script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/prism/1.30.0/prism.min.js"></script>
   <link href="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/prism/1.30.0/themes/prism.min.css" rel="stylesheet">

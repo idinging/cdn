@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>开发镜像库记录</title>
+  <script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/vue/3.5.17/vue.global.prod.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    a { text-decoration: none; color: inherit; } a:hover { color: #409EFF; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f7fa; color: #333; line-height: 1.5; }
+    .container {max-width: 1300px;margin: 0 auto;padding: 15px;}
+    .header {text-align: center;margin-bottom: 14px;padding: 10px 0;background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);color: white;border-radius: 10px;box-shadow: 0 5px 15px rgba(0,0,0,0.1);}
+    .header h1 {font-size: 1.8rem;margin-bottom: 5px;font-weight: 700;}
+    .header h1 a { font-size: 1rem; margin-left: 14px; color: #00bd7e; text-decoration: underline; }
+    .header p { font-size: 1rem; opacity: 0.9; }
+    .search-container { margin-bottom: 14px; }
+    .search-box { width: 100%; padding: 10px 20px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.3s ease; }
+    .search-box:focus { outline: none; border-color: #667eea; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2); }
+    .mirror-list { display: flex; flex-direction: column; gap: 15px; }
+    .mirror-card {background: white;border-radius: 8px;padding: 10px 15px;box-shadow: 0 2px 8px rgba(0,0,0,0.06);transition: all 0.3s ease;border: 1px solid #e8ecf1;}
+    .mirror-card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .mirror-header {display: flex;align-items: center;margin-bottom: 10px;padding-bottom: 6px;border-bottom: 1px solid #f0f2f5;}
+    .mirror-icon {font-size: 1.2rem;margin-right: 8px;width: 16px;height: 16px;display: flex;align-items: center;justify-content: center;border-radius: 5px;}
+    .mirror-info { display: flex; align-items: center; gap: 12px }
+    .mirror-info h3 { font-size: 1.1rem; margin-bottom: 3px; color: #2c3e50; }
+    .mirror-info p {font-size: 1rem;color: #7f8c8d;}
+    .mirror-sources {display: flex;flex-wrap: wrap;gap: 8px;}
+    .mirror-item {display: flex;flex-direction: column;padding: 8px;background: #f8f9fa;border-radius: 6px;transition: all 0.2s ease;width: calc(33.3% - 8px);}
+    .mirror-item:hover { background: #e9ecef; }
+    .mirror-item-header {display: flex;align-items: center;justify-content: space-between;margin-bottom: 6px;}
+    .mirror-name { font-weight: 600; color: #495057; display: flex; align-items: center; font-size: 0.9rem; }
+    .mirror-name i { margin-right: 6px; font-size: 0.8rem; }
+    button { background: #667eea; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease; }
+    button:hover { background: #5a67d8; transform: scale(1.05); }
+    button[primary] { background: #409EFF; }
+    button.copied { background: #48bb78; }
+    button+button { margin-left: 6px; }
+    .mirror-url-container {background: white;padding: 6px;border-radius: 4px;border: 1px solid #dee2e6;}
+    .mirror-url { font-family: 'Consolas', 'Monaco', monospace; font-size: 0.8rem; color: #333; word-break: break-all; line-height: 1.2; }
+    .toast { position: fixed; bottom: 20px; right: 20px; background: #2d3748; color: white; padding: 12px 20px; border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.2); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 1000; font-size: 0.9rem; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .no-results { text-align: center; padding: 40px 0; color: #7f8c8d; font-size: 1.1rem; }
+    .no-results i { font-size: 3rem; margin-bottom: 15px; color: #bdc3c7; }
+    .table-wrap { width: 100%; overflow: auto; }
+    table { border-collapse: collapse; width: 100%; background: #fff; margin-top: 11px; font-size: 0.9rem; }
+    table tr th { background: #f8f9fa; color: #909399; font-weight: bold; border: 1px solid #ebeef5; padding: 8px 4px; }
+    table tr td { border: 1px solid #ebeef5; padding: 8px 4px; text-align: center; }
+    table tr:hover { background-color: #f5f7fa; }
+    @media (max-width: 768px) { .mirror-item { width: 98%; } .header h1 { font-size: 1.8rem; } .mirror-url { font-size: 0.8rem; } }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="container">
+      <div class="header">
+        <h1>♾️开发镜像库记录 <a href="./index.html">访问JS镜像库</a></h1>
+        <p>常用开发工具的国内镜像地址集合，加速开发</p>
+      </div>
+
+      <div class="search-container">
+        <input type="text" class="search-box" placeholder="搜索镜像库（如：nodejs, npm, python）..." v-model="searchQuery">
+      </div>
+
+      <div class="mirror-list" v-if="filteredMirrors.length > 0">
+        <div class="mirror-card" v-for="mirror in filteredMirrors" :key="mirror.name">
+          <div class="mirror-header">
+            <div class="mirror-icon" :class="mirror.iconClass" :style="{ background: mirror.color }"></div>
+            <div class="mirror-info">
+              <h3>{{ mirror.name }}</h3>
+              <p>{{ mirror.description }}</p>
+            </div>
+          </div>
+          <div class="mirror-sources">
+            <div class="mirror-item" v-for="source in mirror.sources" :key="source.name">
+              <div class="mirror-item-header">
+                <span class="mirror-name">{{ source.name}} </span>
+                <div>
+                  <button primary @click="openUrl(source.url)">打开</button>
+                  <button @click="copyToClipboard(source.url)" :class="{ copied: copied===source.url}">
+                    {{ copied === source.url ? '已复制' : '复制' }}
+                  </button>
+                </div>
+              </div>
+              <div class="mirror-url-container">
+                <div class="mirror-url">{{ source.url }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="no-results" v-else>
+        <i class="fas fa-search"></i>
+        <p>没有找到匹配的镜像库</p>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th rowspan="1">仓库名称 </th><th rowspan="1">阿里云仓库地址 </th><th rowspan="1">阿里云仓库地址(老版) </th><th rowspan="1">源地址 </th></tr></thead><tbody><tr><td>central </td><td>https://maven.aliyun.com/repository/central </td><td>https://maven.aliyun.com/nexus/content/repositories/central </td><td>https://repo1.maven.org/maven2/ </td></tr><tr><td>public </td><td>https://maven.aliyun.com/repository/public </td><td>https://maven.aliyun.com/nexus/content/groups/public </td><td>central仓和jcenter仓的聚合仓 </td></tr><tr><td>gradle-plugin </td><td>https://maven.aliyun.com/repository/gradle-plugin </td><td>https://maven.aliyun.com/nexus/content/repositories/gradle-plugin </td><td>https://plugins.gradle.org/m2/ </td></tr><tr><td>apache snapshots </td><td>https://maven.aliyun.com/repository/apache-snapshots </td><td>https://maven.aliyun.com/nexus/content/repositories/apache-snapshots </td><td>https://repository.apache.org/snapshots/ </td></tr></tbody></table></div>
+      <div class="table-wrap"><table ><thead><tr ><th>镜像站名称 </th><th>镜像站URL </th></tr></thead><tbody><tr><td>华为为开源镜像站 </td><td><a href="https://mirrors.huaweicloud.com/">https://mirrors.huaweicloud.com/</a></td></tr><tr><td>腾讯软件源(公网) </td><td><a href="https://mirrors.tencent.com/">https://mirrors.tencent.com/</a></td></tr><tr><td>阿里巴巴开源镜像站(公网) </td><td><a href="https://developer.aliyun.com/mirror/">https://developer.aliyun.com/mirror/</a></td></tr><tr><td>火山引擎开源软件镜像站 </td><td><a href="https://developer.volcengine.com/mirror/">https://developer.volcengine.com/mirror/</a></td></tr><tr><td>网易开源镜像站 </td><td><a href="https://mirrors.163.com/">https://mirrors.163.com/</a></td></tr><tr><td>搜狐开源镜像站 </td><td><a href="https://mirrors.sohu.com/">https://mirrors.sohu.com/</a></td></tr><tr><td>校园网联合镜像站(MirrorZ) </td><td><a href="https://mirrors.cernet.edu.cn/">https://mirrors.cernet.edu.cn/</a></td></tr><tr><td>清华大学开源软件镜像站 Tuna </td><td><a href="https://mirrors.tuna.tsinghua.edu.cn/">https://mirrors.tuna.tsinghua.edu.cn/</a></td></tr><tr><td>上海交通大学致远镜像站 SJTUG </td><td><a href="https://mirrors.sjtug.sjtu.edu.cn/">https://mirrors.sjtug.sjtu.edu.cn/</a></td></tr><tr><td>上海交通大学思源镜像站 SJTUG </td><td><a href="https://mirror.sjtu.edu.cn/">https://mirror.sjtu.edu.cn</a></td></tr><tr><td>北京外国语大学开源软件镜像站 BFSU </td><td><a href="https://mirrors.bfsu.edu.cn/">https://mirrors.bfsu.edu.cn/</a></td></tr><tr><td>中国科学技术大学开源软件镜像 USTC </td><td><a href="https://mirrors.ustc.edu.cn/">https://mirrors.ustc.edu.cn/</a></td></tr><tr><td>浙江大学开源软件镜像站 ZJU </td><td><a href="https://mirrors.zju.edu.cn/">https://mirrors.zju.edu.cn/</a></td></tr><tr><td>吉林大学开源镜像站 JLU </td><td><a href="https://mirrors.jlu.edu.cn/">https://mirrors.jlu.edu.cn/</a></td></tr><tr><td>兰州大学开源社区镜像站 LZUOSS </td><td><a href="https://mirror.lzu.edu.cn/">https://mirror.lzu.edu.cn/</a></td></tr><tr><td>北京大学开源镜像站 PKU </td><td><a href="https://mirrors.pku.edu.cn/">https://mirrors.pku.edu.cn/</a></td></tr><tr><td>北京交通大学自由与开源软件镜像站 </td><td><a href="https://mirror.bjtu.edu.cn/">https://mirror.bjtu.edu.cn/</a></td></tr><tr><td>南方科技大学开源软件镜像站 SUSTech </td><td><a href="https://mirrors.sustech.edu.cn/">https://mirrors.sustech.edu.cn/</a></td></tr><tr><td>南京大学开源镜像站 NJU </td><td><a href="https://mirrors.nju.edu.cn/">https://mirrors.nju.edu.cn/</a></td></tr><tr><td>西安交通大学软件镜像站 XJTU </td><td><a href="https://mirrors.xjtu.edu.cn/">https://mirrors.xjtu.edu.cn/</a></td></tr><tr><td>华中科技大学开源镜像站 HUST </td><td><a href="https://mirrors.hust.edu.cn/">https://mirrors.hust.edu.cn/</a></td></tr><tr><td>中科院软件所智能软件研究中心开源镜像站 </td><td><a href="https://mirror.iscas.ac.cn/">https://mirror.iscas.ac.cn/</a></td></tr><tr><td>哈尔滨工业大学开源镜像站 HIT </td><td><a href="https://mirrors.hit.edu.cn/">https://mirrors.hit.edu.cn/</a></td></tr><tr><td>华南农业大学开源软件镜像站 SCAU </td><td><a href="https://mirrors.scau.edu.cn/">https://mirrors.scau.edu.cn/</a></td></tr><tr><td>南京工业大学开源软件镜像站 NJTech </td><td><a href="https://mirrors.njtech.edu.cn/">https://mirrors.njtech.edu.cn/</a></td></tr><tr><td>南阳理工学院开源软件镜像站 NYIST </td><td><a href="https://mirror.nyist.edu.cn/">https://mirror.nyist.edu.cn/</a></td></tr><tr><td>山东大学镜像站 SDU </td><td><a href="https://mirrors.sdu.edu.cn/">https://mirrors.sdu.edu.cn/</a></td></tr><tr><td>齐鲁工业大学开源软件镜像站 QLU </td><td><a href="https://mirrors.qlu.edu.cn/">https://mirrors.qlu.edu.cn/</a></td></tr><tr><td>重庆邮电大学开源镜像站 CQUPT </td><td><a href="https://mirrors.cqupt.edu.cn/">https://mirrors.cqupt.edu.cn/</a></td></tr><tr><td>重庆大学开源软件镜像站 CQU </td><td><a href="https://mirrors.cqu.edu.cn/">https://mirrors.cqu.edu.cn/</a></td></tr><tr><td>大连东软信息学院开源镜像站 Neosoft </td><td><a href="http://mirrors.neusoft.edu.cn/">http://mirrors.neusoft.edu.cn/</a><br/><br/></td></tr></tbody></table></div>
+    </div>
+
+    <div class="toast" :class="{ show: showToast }">
+      {{ toastMessage }}
+    </div>
+
+  </div>
+
+  <div style="text-align: center;font-size: 13px;padding: 10px 0;"><a href="https://github.com/dhjz/cdn" target="_blank" style="color: #00bd7e;">@dhjz/cdn</a></div>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          searchQuery: '',
+          copied: '',
+          showToast: false,
+          toastMessage: '',
+          mirrors: [
+            {
+              name: '镜像库',
+              description: '各大镜像库地址',
+              color: '#667eea',
+              sources: [
+                { name: '阿里镜像', url: 'https://developer.aliyun.com/mirror/'},
+                { name: '淘宝镜像', url: 'https://registry.npmmirror.com/binary.html'},
+                { name: '腾讯镜像', url: 'https://mirrors.cloud.tencent.com/'},
+                { name: '华为镜像', url: 'https://mirrors.huaweicloud.com/'},
+                { name: '中科大镜像', url: 'https://mirrors.ustc.edu.cn/'},
+                { name: '清华镜像', url: 'https://mirrors.tuna.tsinghua.edu.cn/'},
+                { name: '网易镜像', url: 'http://mirrors.163.com'},
+              ]
+            },
+            {
+              name: 'Node.js',
+              description: 'JavaScript运行时环境',
+              color: '#339933',
+              sources: [
+                { name: '阿里镜像', url: 'https://npmmirror.com/mirrors/node/'},
+                { name: '腾讯镜像', url: 'https://mirrors.cloud.tencent.com/nodejs-release/'},
+                { name: '华为镜像', url: 'https://mirrors.huaweicloud.com/nodejs/'},
+                { name: '中科大镜像', url: 'https://mirrors.ustc.edu.cn/node/'},
+                { name: '清华镜像', url: 'https://mirrors.tuna.tsinghua.edu.cn/nodejs-release/'},
+                { name: '源地址', url: 'https://nodejs.org/dist/'},
+              ]
+            },
+            {
+              name: 'npm',
+              description: 'Node.js包管理器',
+              color: '#cb3837',
+              sources: [
+                { name: '淘宝镜像', url: 'https://registry.npmmirror.com/'},
+                { name: '腾讯镜像', url: 'https://mirrors.cloud.tencent.com/npm/'},
+                { name: '华为镜像', url: 'https://mirrors.huaweicloud.com/repository/npm/'},
+                { name: '中科大镜像', url: 'https://npmreg.mirrors.ustc.edu.cn/'},
+                { name: '源地址', url: 'https://registry.npmjs.org/'},
+              ]
+            },
+            {
+              name: 'Go',
+              description: 'Go语言模块代理',
+              color: '#00add8',
+              sources: [
+                { name: '七牛镜像', url: 'https://goproxy.cn,direct'},
+                { name: '阿里镜像', url: 'https://mirrors.aliyun.com/goproxy/'},
+                { name: '阿里下载', url: 'https://mirrors.aliyun.com/golang/'},
+                { name: '腾讯镜像', url: 'https://mirrors.tencent.com/go/'},
+                { name: '百度镜像', url: 'https://goproxy.bj.bcebos.com/'},
+                { name: '华为镜像', url: 'https://repo.huaweicloud.com/repository/goproxy/'},
+                { name: '清华下载', url: 'https://mirrors.ustc.edu.cn/golang/'},
+                { name: '中科大下载', url: 'https://mirrors.ustc.edu.cn/golang/'},
+                { name: '官方代理', url: 'https://goproxy.io,direct'},
+              ]
+            },
+            {
+              name: 'Docker',
+              description: '容器镜像仓库',
+              color: '#2496ed',
+              sources: [
+                { name: '1pannel汇总', url: 'https://status.1panel.top/status/docker'},
+                { name: 'hub镜像搜索', url: 'https://docker.aityp.com/'},
+                { name: 'hub镜像搜索', url: 'https://registry.cyou/'},
+                { name: '毫秒镜像', url: 'https://docker.1ms.run'},
+                { name: '毫秒镜像', url: 'https://ghcr.1ms.run'},
+                { name: '1pannel', url: 'https://docker.1panel.live'},
+                { name: '1pannel', url: 'https://dockerproxy.1panel.live'},
+                { name: 'dockerpull', url: 'https://dockerpull.pw/'},
+                { name: 'ketches', url: 'https://docker.ketches.cn'},
+                { name: '其他', url: 'https://hub.rat.dev'},
+                { name: 'daocloud', url: 'https://docker.m.daocloud.io'},
+                { name: '棉花云', url: 'https://hub1.nat.tf'},
+                { name: '一键换源', url: 'https://linuxmirrors.cn/'},
+              ]
+            },
+            {
+              name: 'Python',
+              description: 'Python包索引镜像',
+              color: '#3776ab',
+              sources: [
+                { name: '阿里镜像', url: 'https://mirrors.aliyun.com/pypi/simple/'},
+                { name: '阿里下载', url: 'https://mirrors.aliyun.com/python-release'},
+                // { name: '豆瓣镜像', url: 'https://pypi.douban.com/simple/'},
+                { name: '华为镜像', url: 'https://mirrors.huaweicloud.com/repository/pypi/simple'},
+                { name: '华为下载', url: 'https://mirrors.huaweicloud.com/python'},
+                { name: '中科大镜像', url: 'https://pypi.mirrors.ustc.edu.cn/simple/'},
+                { name: '中科大下载', url: 'https://mirrors.ustc.edu.cn/python/'},
+                { name: '清华镜像', url: 'https://pypi.tuna.tsinghua.edu.cn/simple/'},
+              ]
+            },
+            {
+              name: 'Maven',
+              description: 'Java项目管理工具',
+              color: '#c71a36',
+              sources: [
+                { name: '阿里镜像', url: 'https://maven.aliyun.com/repository/public'},
+                { name: '阿里多库', url: 'https://maven.aliyun.com/mvn/guide'},
+                { name: '华为镜像', url: 'https://mirrors.huaweicloud.com/repository/maven/'},
+                { name: '腾讯镜像', url: 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/'},
+                { name: '网易镜像', url: 'http://mirrors.163.com/maven/repository/maven-public/'},
+              ]
+            },
+            {
+              name: 'Ubuntu',
+              description: 'Ubuntu软件源',
+              color: '#e95420',
+              sources: [
+                { name: '阿里镜像', url: 'https://mirrors.aliyun.com/ubuntu/'},
+                { name: '清华镜像', url: 'https://mirrors.tuna.tsinghua.edu.cn/ubuntu/'},
+                { name: '中科大镜像', url: 'https://mirrors.ustc.edu.cn/ubuntu/'},
+                { name: '华为镜像', url: 'https://mirrors.huaweicloud.com/ubuntu/'},
+                { name: '网易镜像', url: 'http://mirrors.163.com/ubuntu/'},
+              ]
+            },
+            {
+              name: 'CentOS',
+              description: 'CentOS软件源',
+              color: '#932279',
+              sources: [
+                { name: '阿里镜像', url: 'https://mirrors.aliyun.com/centos/'},
+                { name: '清华镜像', url: 'https://mirrors.tuna.tsinghua.edu.cn/centos/'},
+                { name: '中科大镜像', url: 'https://mirrors.ustc.edu.cn/centos/'},
+                { name: '华为镜像', url: 'https://mirrors.huaweicloud.com/centos/'},
+                { name: '网易镜像', url: 'http://mirrors.163.com/centos/'},
+              ]
+            },
+            {
+              name: 'Debian',
+              description: 'Debian软件源',
+              color: '#d70a53',
+              sources: [
+                { name: '阿里镜像', url: 'https://mirrors.aliyun.com/debian/'},
+                { name: '清华镜像', url: 'https://mirrors.tuna.tsinghua.edu.cn/debian/'},
+                { name: '中科大镜像', url: 'https://mirrors.ustc.edu.cn/debian/'},
+                { name: '华为镜像', url: 'https://mirrors.huaweicloud.com/debian/'},
+                { name: '网易镜像', url: 'http://mirrors.163.com/debian/'},
+              ]
+            },
+            {
+              name: 'Alpine Linux',
+              description: 'Alpine Linux软件源',
+              color: '#0d597f',
+              sources: [
+                { name: '阿里镜像', url: 'https://mirrors.aliyun.com/alpine/'},
+                { name: '清华镜像', url: 'https://mirrors.tuna.tsinghua.edu.cn/alpine/'},
+                { name: '中科大镜像', url: 'https://mirrors.ustc.edu.cn/alpine/'},
+                { name: '华为镜像', url: 'https://mirrors.huaweicloud.com/alpine/'},
+                { name: '网易镜像', url: 'http://mirrors.163.com/alpine/'},
+              ]
+            }
+          ]
+        }
+      },
+      computed: {
+        filteredMirrors() {
+          if (!this.searchQuery.trim()) {
+            return this.mirrors;
+          }
+
+          const query = this.searchQuery.toLowerCase();
+          return this.mirrors.filter(mirror => {
+            // 搜索镜像库名称
+            if (mirror.name.toLowerCase().includes(query)) {
+              return true;
+            }
+
+            // 搜索镜像源名称
+            if (mirror.sources.some(source => source.name.toLowerCase().includes(query))) {
+              return true;
+            }
+
+            // 搜索镜像URL
+            if (mirror.sources.some(source => source.url.toLowerCase().includes(query))) {
+              return true;
+            }
+
+            return false;
+          });
+        }
+      },
+      methods: {
+        openUrl(url) { window.open(url, '_blank'); },
+        async copyToClipboard(text) {
+          try {
+            await navigator.clipboard.writeText(text);
+            this.copied = text;
+            this.showToastMessage('镜像地址已复制到剪贴板');
+
+            setTimeout(() => {
+              this.copied = '';
+            }, 2000);
+          } catch (err) {
+            this.showToastMessage('复制失败，请手动复制');
+          }
+        },
+        showToastMessage(message) {
+          this.toastMessage = message;
+          this.showToast = true;
+
+          setTimeout(() => {
+            this.showToast = false;
+          }, 3000);
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+
+</html>
