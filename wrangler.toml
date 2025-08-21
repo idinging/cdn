@@ -1,5 +1,8 @@
 name = "cdn"
 main = "./wrp.js"
 compatibility_date = "2025-08-21"
-[site]
-bucket = "./"        # 指向你的静态文件目录
+
+[assets]
+directory = "public"
+binding = "ASSETS"
+
