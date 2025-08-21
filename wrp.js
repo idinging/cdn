@@ -1,8 +1,17 @@
 export default {
   async fetch(request, env, ctx) {
-    return new Response("静态页面部署成功，Worker 入口就这么简单！", {
-      headers: { "Content-Type": "text/plain" }
-    })
-  }
-}
+    const url = new URL(request.url)
+    const path = url.pathname === "/" ? "/index.html" : url.pathname
 
+    try {
+      // 从 Assets 里读取文件
+      const res = await env.ASSETS.get(path)
+      if (!res) return new Response("Not Found", { status: 404 })
+      return new Response(res.body, {
+        headers: { "Content-Type": res.metadata?.contentType || "text/plain" },
+      })
+    } catch (err) {
+      return new Response("Error", { status: 500 })
+    }
+  },
+}
