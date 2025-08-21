@@ -1,4 +1,5 @@
 name = "cdn"
+main = "./wrp.js"
 compatibility_date = "2025-08-21"
 
 [site] #ss
