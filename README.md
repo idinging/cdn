@@ -16,9 +16,9 @@
 # 其他说明
 - 页面效果图见`appimg`目录
 - JS库: 
-- <img src="https://gcore.jsdelivr.net/gh/dhjz/cdn@master/appimg/app1.jpg" style="width: 340px;"/>
-- Mirror镜像: 
 - <img src="https://gcore.jsdelivr.net/gh/dhjz/cdn@master/appimg/app2.jpg" style="width: 340px;"/>
+- Mirror镜像: 
+- <img src="https://gcore.jsdelivr.net/gh/dhjz/cdn@master/appimg/app1.jpg" style="width: 340px;"/>
 
 - 项目地址: [https://github.com/dhjz/cdn]( https://github.com/dhjz/cdn)  
 - 预览地址: [https://199311.xyz/cdn/](https://199311.xyz/cdn/)
